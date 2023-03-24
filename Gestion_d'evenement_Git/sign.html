@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Connectez-vous - Super calendrier</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
+  </head>
+  <body>
+    <h1>Connectez-vous au Super Calendrier 1 </h1>
+   
+    <form>
+        <label for="username">Pseudo:</label>
+      <input type="username" id="username" name="username" required><br><br>
+      <label for="email">Email:</label>
+      <input type="email" id="email" name="email" required><br><br>
+      <label for="password">Mot de passe:</label>
+      <input type="password" id="password" name="password" required><br><br>
+      <input type="submit" value="Connexion" id="Connexion">
+    </form>
+  
+  <script type="module">
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.18.0/firebase-app.js";
+  import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/9.18.0/firebase-database.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.18.0/firebase-analytics.js";
+  import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.18.0/firebase-auth.js";
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
+
+  // Your web app's Firebase configuration
+  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+  const firebaseConfig = {
+    apiKey: "AIzaSyBUuVLBGr-flf5Q9UY78USGB9FrlxtiW_E",
+    authDomain: "gestion-d-evenement.firebaseapp.com",
+    databaseURL: "https://gestion-d-evenement-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "gestion-d-evenement",
+    storageBucket: "gestion-d-evenement.appspot.com",
+    messagingSenderId: "780010028519",
+    appId: "1:780010028519:web:8f82f6010a961c48be5142",
+    measurementId: "G-JEJGM4JJ2R"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const database = getDatabase(app);
+  const analytics = getAnalytics(app);
+  const auth = getAuth();
+  const Connexion = document.getElementById('Connexion');
+  Connexion.addEventListener('click',(e)=>
+  {
+    e.preventDefault(); // empêcher le formulaire de s'envoyer
+    var email=document.getElementById('email').value;
+    var password=document.getElementById('password').value;
+    var Pseudo=document.getElementById('username').value;
+    createUserWithEmailAndPassword(auth, email, password)
+    .then((userCredential) => {
+      // Signed in 
+      const user = userCredential.user;
+      alert('Utilisateur créé');
+      // Ajouter les informations d'utilisateur dans la base de données
+      const userId = user.uid;
+      const userData = {
+        email: email,
+        pseudo: Pseudo
+      };
+      set(ref(database, 'users/' + userId), userData);
+    })
+  .catch((error) => {
+    const errorCode = error.code;
+    const errorMessage = error.message;
+    alert('errorMessage')
+    // ..
+  });
+  });
+</script>
+</html>
