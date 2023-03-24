@@ -8,22 +8,23 @@
     <h1>Connectez-vous au Super Calendrier 1 </h1>
    
     <form>
-        <label for="username">Pseudo:</label>
+       <label for="username">Pseudo:</label>
       <input type="username" id="username" name="username" required><br><br>
       <label for="email">Email:</label>
       <input type="email" id="email" name="email" required><br><br>
       <label for="password">Mot de passe:</label>
       <input type="password" id="password" name="password" required><br><br>
-      <input type="submit" value="Connexion" id="Connexion">
+      <input type="submit" value="Inscription" id="Connexion">
+      <input type="submit" value=" Connctez vous " id="login">
     </form>
   
   <script type="module">
     //Testgit 
   // Import the functions you need from the SDKs you need
   import { initializeApp } from "https://www.gstatic.com/firebasejs/9.18.0/firebase-app.js";
-  import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/9.18.0/firebase-database.js";
+  import { getDatabase, ref, set,update } from "https://www.gstatic.com/firebasejs/9.18.0/firebase-database.js";
   import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.18.0/firebase-analytics.js";
-  import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.18.0/firebase-auth.js";
+  import { getAuth, createUserWithEmailAndPassword,signInWithEmailAndPassword,onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.18.0/firebase-auth.js";
   // TODO: Add SDKs for Firebase products that you want to use
   // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -72,5 +73,44 @@
     // ..
   });
   });
+  ///////////////////////////////////////////////////////////////// Connectez vous
+  login.addEventListener('click',(e)=>{
+    ///Pour la connexion j'utilise que l email et motdepaasse
+    e.preventDefault();
+  var email = document.getElementById('email').value;
+  var password = document.getElementById('password').value;
+  signInWithEmailAndPassword(auth, email, password)
+    .then((userCredential) => {
+      // Signed in
+      const user = userCredential.user;
+      const userId = user.uid; // Retrieve the user ID here
+      const dt = new Date();
+      update(ref(database, 'users/' + userId), {
+        last_login: dt,
+      })
+      alert('Connexion réussie');
+    })
+    .catch((error) => {
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      alert('Erreur de connexion: ' + errorMessage);
+    });
+
+  })
+
+////Pour savoir l'etat de connection de l'utilisateur 
+/*const user=auth.currentUser;
+  onAuthStateChanged(auth, (user) => {
+  if (user) {
+    // User is signed in, see docs for a list of available properties
+    // https://firebase.google.com/docs/reference/js/firebase.User
+    const uid = user.uid;
+    alert('Bienvenue dans votre espace'+email);
+    // ...
+  } else {
+    // User is signed out
+    // ...
+  }
+});*/
 </script>
 </html>
