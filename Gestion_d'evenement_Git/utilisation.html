@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-
+      <link rel="stylesheet" type="text/css" href="style_utilisation.css">
     </head>
     <body>
 
@@ -12,6 +12,22 @@
 <script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-storage.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-analytics.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-functions.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dayjs"></script>
+
+
+  
+  <body>
+    <h1>Calendrier d'événements</h1>
+    <form>
+      <label for="titre">Titre de l'événement :</label>
+      <input type="text" id="titre" name="titre"><br>
+      <label for="date">Date de l'événement :</label>
+      <input type="date" id="date" name="date"><br>
+      <label for="heure">Heure de l'événement :</label>
+      <input type="time" id="heure" name="heure"><br>
+      <input type="submit" value="Créer l'événement">
+    </form>
+
 
 <input type="submit" value=" Deconnection " id="logout">
 
