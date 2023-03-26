@@ -82,22 +82,28 @@
   var email = document.getElementById('email').value;
   var password = document.getElementById('password').value;
   signInWithEmailAndPassword(auth, email, password)
-    .then((userCredential) => {
-      // Signed in
-      const user = userCredential.user;
-      const userId = user.uid; // Retrieve the user ID here
-      const dt = new Date();
-      update(ref(database, 'users/' + userId), {
-        last_login: dt,
-      })
+  .then((userCredential) => {
+    // Signed in
+    const user = userCredential.user;
+    const userId = user.uid; // Retrieve the user ID here
+    const dt = new Date();
+    update(ref(database, 'users/' + userId), {
+      last_login: dt,
+   
+    })
+    .then(() => {
       alert('Connexion réussie');
       window.location.href = 'utilisation.html'; // rediriger l'utilisateur vers la nouvelle page
     })
     .catch((error) => {
-      const errorCode = error.code;
-      const errorMessage = error.message;
-      alert('Erreur de connexion: ' + errorMessage);
+      alert('Erreur lors de la mise à jour de la base de données: ' + error.message);
     });
+  })
+  .catch((error) => {
+    const errorCode = error.code;
+    const errorMessage = error.message;
+    alert('Erreur de connexion: ' + errorMessage);
+  });
 
   })
 
