@@ -3,8 +3,6 @@
     <head>
       <link rel="stylesheet" type="text/css" href="style_utilisation.css">
     </head>
-    <body>
-
 
 <script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-auth.js"></script>
@@ -14,35 +12,30 @@
 <script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-functions.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/dayjs"></script>
 
-
-  
   <body>
     <h1>Calendrier d'événements</h1>
-    <form>
+    <form id="event">
       <label for="titre">Titre de l'événement :</label>
       <input type="text" id="titre" name="titre"><br>
       <label for="date">Date de l'événement :</label>
       <input type="date" id="date" name="date"><br>
       <label for="heure">Heure de l'événement :</label>
       <input type="time" id="heure" name="heure"><br>
-      <input type="submit" value="Créer l'événement">
+      <input type="button" value="Ajouter" id="Ajout_event">
     </form>
 
 
 <input type="submit" value=" Deconnection " id="logout">
 
 <script type="module">
-    //Testgit 
+
   // Import the functions you need from the SDKs you need
   import { initializeApp } from "https://www.gstatic.com/firebasejs/9.18.0/firebase-app.js";
   import { getDatabase, ref, set,update } from "https://www.gstatic.com/firebasejs/9.18.0/firebase-database.js";
   import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.18.0/firebase-analytics.js";
   import { getAuth, createUserWithEmailAndPassword,signInWithEmailAndPassword,onAuthStateChanged,signOut} from "https://www.gstatic.com/firebasejs/9.18.0/firebase-auth.js";
-  //import { getAuth, signOut } from "firebase/auth";
-  // TODO: Add SDKs for Firebase products that you want to use
-  // https://firebase.google.com/docs/web/setup#available-libraries
 
-  // Confirguration de l app web 
+
   // For Firebase JS SDK v7.20.0 and later, measurementId is optional
   const firebaseConfig = {
     apiKey: "AIzaSyBUuVLBGr-flf5Q9UY78USGB9FrlxtiW_E",
@@ -64,20 +57,17 @@
   ///Cette partie sert a savoir si l utilisateur est bien connecté 
   const user = auth.currentUser;
   onAuthStateChanged(auth, (user) => {
+    e.preventDefault();
   if (user) {
     // User is signed in, see docs for a list of available properties
     // https://firebase.google.com/docs/reference/js/firebase.User
     const uid = user.uid;
     console.log("L'utilisateur est connecté.");
-    console.log("Nom d'utilisateur : " + user.username);
- 
-    console.log("UID de l'utilisateur : " + user.uid);
     alert('Bienvenue à vous :'+user.email);
   
-    // ...
+   
   } else {
-    // User is signed out
-    // ...
+    
   }
 });
 
@@ -99,10 +89,32 @@ logout.addEventListener('click',(e)=>{
 });
 });
 
+  // Récupération des éléments HTML
+ e.preventDefault();
 
+// Envoi des données du formulaire à la base de données Firebase
+Ajout_event.addEventListener('click', (e) => {
+  e.preventDefault(); // empêcher la page de se rafraîchir
+  const titreInput = document.getElementById('titre').value;
+  const dateInput = document.getElementById('date').value;
+  const heureInput = document.getElementById('heure').value;
 
-
-
+  onAuthStateChanged(auth, (user) => {
+    const userId = user.uid;
+    push(ref(database, 'users/' + userId), {
+      titre: titreInput,
+      date: dateInput,
+      heure: heureInput,
+    })
+    .then(() => {
+      alert('Ajout de l evenement a la base de données réussi');
+    })
+    .catch((error) => {
+      alert('Erreur lors de la mise à jour de la base de données: ' + error.message);
+      consol.log('ereeur ');
+    });
+  });
+});
 
   </script>
     </body>
