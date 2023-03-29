@@ -2,10 +2,10 @@
 <html>
   <head>
     <title>Connectez-vous - Super calendrier</title>
-    <link rel="stylesheet" type="text/css" href="style.css">
+    <link rel="stylesheet" type="text/css" href="style_utilisation.css">
   </head>
   <body>
-    <h1>Connectez-vous au Super Calendrier 1 </h1>
+    <h1>Gerer vos evenements</h1>
    
     <form id="use">
     <label for="email">Email:</label>
@@ -19,7 +19,8 @@
       <label for="time">Horraire de l'événement:</label>
       <input type="time" id="time" name="time" required><br><br>
       <input type="submit" value="Ajouter" id="Ajouter">
-      <!--<input type="submit" value=" Connctez vous " id="login">-->
+      <input type="submit" value="Supprimer" id="Supprimer">
+     
 
     </form>
   
@@ -27,7 +28,7 @@
     //Testgit 
   // Import the functions you need from the SDKs you need
   import { initializeApp } from "https://www.gstatic.com/firebasejs/9.18.0/firebase-app.js";
-  import { getDatabase, ref, set,update } from "https://www.gstatic.com/firebasejs/9.18.0/firebase-database.js";
+  import { getDatabase,orderByChild,remove,get,ref,push,set,update } from "https://www.gstatic.com/firebasejs/9.18.0/firebase-database.js";
   import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.18.0/firebase-analytics.js";
   import { getAuth, createUserWithEmailAndPassword,signInWithEmailAndPassword,onAuthStateChanged,signOut} from "https://www.gstatic.com/firebasejs/9.18.0/firebase-auth.js";
   //import { getAuth, signOut } from "firebase/auth";
@@ -53,42 +54,47 @@
   const analytics = getAnalytics(app);
   const auth = getAuth();
   const Ajouter = document.getElementById('Ajouter');
-  Ajouter.addEventListener('click',(e)=>
-  {
-    e.preventDefault(); // empêcher le formulaire de s'envoyer
-    var email=document.getElementById('email').value;
-    var password=document.getElementById('password').value;
-    var titre=document.getElementById('titre').value;
-    var date=document.getElementById('date').value;
-    var time=document.getElementById('time').value;
-    const user = auth.currentUser;
+  const Supp = document.getElementById('Supprimer');
+  
+  
+Ajouter.addEventListener('click',(e)=>
+{
+  e.preventDefault(); // empêcher le formulaire de s'envoyer
+  var email=document.getElementById('email').value;
+  var password=document.getElementById('password').value;
+  var titre=document.getElementById('titre').value;
+  var date=document.getElementById('date').value;
+  var time=document.getElementById('time').value;
+  const user = auth.currentUser;
   if (user) {
     const userId = user.uid;
-    const nouvelEvenement = {
+    const evenement = {
       titre: titre,
       date: date,
       time: time
     };
-    update(ref(database, 'users/' + userId), nouvelEvenement)
+    const eventsRef = ref(database, 'users/' + userId + '/events');
+    push(eventsRef, evenement)
       .then(() => {
-        alert('Événement ajouté');
+        alert('Événement ajouté :)');
       })
       .catch((error) => {
         console.error(error);
         alert('Une erreur est survenue lors de l\'ajout de l\'événement');
       });
   } else {
-    // Si l'utilisateur n'est pas connecté, essayer de le connecter
-    signInWithEmailAndPassword(auth, email, password)
+   
+    signInWithEmailAndPassword(auth, email, password)///Si jamais ca se trompe sur le mdp
       .then((userCredential) => {
         const user = userCredential.user;
         const userId = user.uid;
-        const nouvelEvenement = {
+        const evenement = {
           titre: titre,
           date: date,
           time: time
         };
-        update(ref(database, 'users/' + userId), nouvelEvenement)
+        const eventsRef = ref(database, 'users/' + userId + '/events');
+        push(eventsRef, evenement)
           .then(() => {
             alert('Événement ajouté');
           })
@@ -103,38 +109,40 @@
       });
   }
 });
-  ///////////////////////////////////////////////////////////////// Connectez vous
-  login.addEventListener('click',(e)=>{
-    ///Pour la connexion j'utilise que l email et motdepaasse
-    e.preventDefault();
-  var email = document.getElementById('email').value;
-  var password = document.getElementById('password').value;
-  signInWithEmailAndPassword(auth, email, password)
-  .then((userCredential) => {
-    // Signed in
-    const user = userCredential.user;
-    const userId = user.uid; // Retrieve the user ID here
-    const dt = new Date();
-    update(ref(database, 'users/' + userId), {
-      last_login: dt,
-   
-    })
-    .then(() => {
-      alert('Connexion réussie');
-      window.location.href = 'utilisationv2.html'; // rediriger l'utilisateur vers la nouvelle page
-    })
-    .catch((error) => {
-      alert('Erreur lors de la mise à jour de la base de données: ' + error.message);
+  
+Supp.addEventListener('click', (e) => {
+  e.preventDefault(); // empêcher le formulaire de s'envoyer
+  var email=document.getElementById('email').value;
+  var password=document.getElementById('password').value;
+  var titre=document.getElementById('titre').value;
+  var date=document.getElementById('date').value;
+  var time=document.getElementById('time').value;
+  const user = auth.currentUser;
+  if (user) {
+    const userId = user.uid;
+    const eventsRef = ref(database, 'users/' + userId + '/events');
+    const query = orderByChild(ref(eventsRef, 'titre')).equalTo(titre);
+    get(query).then((snapshot) => {
+      snapshot.forEach((childSnapshot) => {
+        const event = childSnapshot.val();
+        if (event.date === date && event.time === time) {
+          const eventId = childSnapshot.key;
+          const eventRef = child(eventsRef, eventId);
+          remove(eventRef)
+            .then(() => {
+              alert('Événement supprimé :)');
+            })
+            .catch((error) => {
+              console.error(error);
+              alert('Une erreur est survenue lors de la suppression de l\'événement');
+            });
+        }
+      });
     });
-  })
-  .catch((error) => {
-    const errorCode = error.code;
-    const errorMessage = error.message;
-    alert('Erreur de connexion: ' + errorMessage);
-  });
-
-  })
-
+  } else {
+    alert('Veuillez vous connecter pour supprimer un événement');
+  }
+});
 
 
 
