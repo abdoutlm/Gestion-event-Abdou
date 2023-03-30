@@ -12,7 +12,7 @@
       <input type="email" id="email" name="email" required><br><br>
       <label for="password">Mot de passe:</label>
       <input type="password" id="password" name="password" required><br><br>
-    <label for="titre">Titre:</label>
+      <label for="titre">Titre:</label>
       <input type="titre" id="titre" name="titre" required><br><br>
       <label for="date">Date:</label>
       <input type="date" id="date" name="date" required><br><br>
@@ -28,7 +28,7 @@
     //Testgit 
   // Import the functions you need from the SDKs you need
   import { initializeApp } from "https://www.gstatic.com/firebasejs/9.18.0/firebase-app.js";
-  import { getDatabase,orderByChild,remove,get,ref,push,set,update } from "https://www.gstatic.com/firebasejs/9.18.0/firebase-database.js";
+import { getDatabase,orderByChild,remove,get,ref,push,set,update,onValue,query} from "https://www.gstatic.com/firebasejs/9.18.0/firebase-database.js";
   import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.18.0/firebase-analytics.js";
   import { getAuth, createUserWithEmailAndPassword,signInWithEmailAndPassword,onAuthStateChanged,signOut} from "https://www.gstatic.com/firebasejs/9.18.0/firebase-auth.js";
   //import { getAuth, signOut } from "firebase/auth";
@@ -110,7 +110,8 @@ Ajouter.addEventListener('click',(e)=>
   }
 });
   
-Supp.addEventListener('click', (e) => {
+Supprimer.addEventListener('click',(e)=>
+{
   e.preventDefault(); // empêcher le formulaire de s'envoyer
   var email=document.getElementById('email').value;
   var password=document.getElementById('password').value;
@@ -121,14 +122,14 @@ Supp.addEventListener('click', (e) => {
   if (user) {
     const userId = user.uid;
     const eventsRef = ref(database, 'users/' + userId + '/events');
-    const query = orderByChild(ref(eventsRef, 'titre')).equalTo(titre);
-    get(query).then((snapshot) => {
+    get(eventsRef).then((snapshot) => {
+      let eventExists = false;
       snapshot.forEach((childSnapshot) => {
         const event = childSnapshot.val();
-        if (event.date === date && event.time === time) {
-          const eventId = childSnapshot.key;
-          const eventRef = child(eventsRef, eventId);
-          remove(eventRef)
+        if (event.titre === titre && event.date === date && event.time === time) {
+          eventExists = true;
+          const eventKey = childSnapshot.key;
+          remove(ref(database, 'users/' + userId + '/events/' + eventKey))
             .then(() => {
               alert('Événement supprimé :)');
             })
@@ -138,14 +139,16 @@ Supp.addEventListener('click', (e) => {
             });
         }
       });
+      if (!eventExists) {
+        alert('L\'événement que vous voulez supprimer n\'existe pas');
+      }
+    }).catch((error) => {
+      console.error(error);
+      alert('Une erreur est survenue lors de la récupération de l\'événement');
     });
   } else {
-    alert('Veuillez vous connecter pour supprimer un événement');
+    alert('Vous devez vous connecter avant de supprimer un événement');
   }
 });
-
-
-
-
 </script>
 </html>
