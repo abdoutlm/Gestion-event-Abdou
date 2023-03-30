@@ -20,10 +20,10 @@
       <input type="time" id="time" name="time" required><br><br>
       <input type="submit" value="Ajouter" id="Ajouter">
       <input type="submit" value="Supprimer" id="Supprimer">
-     
+      <button  onclick="window.location.href='calendrier.html'">Aller à une autre page</button>    
 
     </form>
-  
+    <div id="calendar">
   <script type="module">
     //Testgit 
   // Import the functions you need from the SDKs you need
@@ -109,7 +109,7 @@ Ajouter.addEventListener('click',(e)=>
       });
   }
 });
-  
+  ///Supprimer un evenement
 Supprimer.addEventListener('click',(e)=>
 {
   e.preventDefault(); // empêcher le formulaire de s'envoyer
@@ -122,7 +122,7 @@ Supprimer.addEventListener('click',(e)=>
   if (user) {
     const userId = user.uid;
     const eventsRef = ref(database, 'users/' + userId + '/events');
-    get(eventsRef).then((snapshot) => {
+    get(eventsRef).then((snapshot) => {//snapshot est une copie des données à un instant précis 
       let eventExists = false;
       snapshot.forEach((childSnapshot) => {
         const event = childSnapshot.val();
