@@ -20,10 +20,22 @@
       <input type="time" id="time" name="time" required><br><br>
       <input type="submit" value="Ajouter" id="Ajouter">
       <input type="submit" value="Supprimer" id="Supprimer">
-      <button  onclick="window.location.href='calendrier.html'">Aller à une autre page</button>    
+      <button id="Afficher" value="Afficher"> Afficher le calendrier</button>    
 
     </form>
-    <div id="calendar">
+   <div id="calendar">
+      <table>
+        <thead>
+          <tr>
+            <th>Titre</th>
+            <th>Date</th>
+            <th>Heure</th>
+          </tr>
+        </thead>
+        <tbody id="events">
+        </tbody>
+      </table>
+    </div>
   <script type="module">
     //Testgit 
   // Import the functions you need from the SDKs you need
@@ -150,5 +162,30 @@ Supprimer.addEventListener('click',(e)=>
     alert('Vous devez vous connecter avant de supprimer un événement');
   }
 });
+Afficher.addEventListener('click',(e)=>
+{
+  e.preventDefault();
+  const user = auth.currentUser;
+  if (user) {
+    const userId = user.uid;
+    const eventsRef = ref(database, 'users/' + userId + '/events');
+    const eventsQuery = query(eventsRef, orderByChild('date'));
+    onValue(eventsQuery, (snapshot) => {
+      const events = snapshot.val();
+      let html = '';
+      for (const eventId in events) {
+        const event = events[eventId];
+        html += '<tr>';
+        html += '<td>' + event.titre + '</td>';
+        html += '<td>' + event.date + '</td>';
+        html += '<td>' + event.time + '</td>';
+        html += '</tr>';
+      }
+      document.getElementById('events').innerHTML = html;
+    });
+  } else {
+    alert('Veuillez vous connecter pour afficher les événements');
+  }
+})
 </script>
 </html>
